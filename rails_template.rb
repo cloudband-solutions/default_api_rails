@@ -23,9 +23,8 @@ after_bundle do
   run "unzip -q -o #{zip_path} -d #{extract_path}"
   source_dir = File.join(extract_path, template_dir_name)
 
-  say "📂 Copying files into #{app_name}...", :green
+  say "📂 Copying template files into #{app_name}...", :green
 
-  # Manually copy all files, excluding certain directories
   excludes = [".git", "log", "tmp", "node_modules"]
   Dir.glob("#{source_dir}/**/*", File::FNM_DOTMATCH).each do |src_path|
     next if src_path == source_dir
@@ -49,16 +48,26 @@ after_bundle do
 
   say "🔁 Replacing 'DefaultApiRails' → '#{app_module_name}'", :green
   files = Dir.glob("**/*.{rb,yml,yaml,erb,haml,slim,js,json,md}", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
+
   files.each do |file|
     gsub_file file, "DefaultApiRails", app_module_name
     gsub_file file, "default_api_rails", app_name
   end
 
-  # Reset credentials
+  # Reset credentials to avoid master.key mismatch
   say "🔐 Resetting credentials to avoid master.key mismatch...", :green
   remove_file "config/credentials.yml.enc"
   remove_file "config/master.key"
   run "EDITOR=true rails credentials:edit"
 
-  say "✅ App '#{app_name}' is ready and secure!", :green
+  # ✅ Fix FrozenError: Replace autoload_paths << with Zeitwerk-friendly syntax
+  say "🛠️ Patching config/application.rb to avoid FrozenError...", :green
+  gsub_file "config/application.rb", /config\.autoload_paths\s*<<\s*["'](.+?)["']/, 'Rails.autoloaders.main.push_dir(Rails.root.join("\1"))'
+  gsub_file "config/application.rb", /config\.autoload_paths\s*\+=\s*\[(.+?)\]/ do |match|
+    paths = match.match(/\[(.+?)\]/)[1].split(",").map(&:strip)
+    paths.map! { |p| "Rails.root.join(#{p}).to_s" }
+    "config.autoload_paths += [#{paths.join(', ')}]"
+  end
+
+  say "✅ App '#{app_name}' is ready, autoload-safe, and customized!", :green
 end
