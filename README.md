@@ -1,6 +1,11 @@
 # Default API Template
 
-A `Rails` default API template using PostgreSQL as the database backend.
+A `Rails` default API template for easy bootstrapping.
+
+## Tech Stack
+
+* Database: `PostgreSQL`
+* Rails: `8.0.1`
 
 ## Environment Variables
 
