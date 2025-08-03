@@ -30,3 +30,9 @@ bundle exec rails db:create
 bundle exec rails db:migrate
 bundle exec rspec spec
 ```
+
+## Current Features
+
+* Uses `uuid` as primary key
+* Default `user` entity with `email` as identifier.
+* `rspec` for testing
