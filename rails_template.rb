@@ -23,14 +23,27 @@ after_bundle do
   run "unzip -q -o #{zip_path} -d #{extract_path}"
   source_dir = File.join(extract_path, template_dir_name)
 
-  say "📂 Copying template files into #{app_name}...", :green
-  directory source_dir, ".", force: true, exclude_pattern: %r{\A(?:\.git|log|tmp|node_modules)}
+  say "📂 Manually copying files from template...", :green
 
-  say "📦 Using template's Gemfile...", :green
-  copy_file File.join(source_dir, "Gemfile"), "Gemfile", force: true
-  if File.exist?(File.join(source_dir, "Gemfile.lock"))
-    copy_file File.join(source_dir, "Gemfile.lock"), "Gemfile.lock", force: true
+  # Copy files and folders except excluded ones
+  excludes = [".git", "log", "tmp", "node_modules"]
+
+  Dir.glob("#{source_dir}/**/*", File::FNM_DOTMATCH).each do |src_path|
+    next if src_path == source_dir
+    rel_path = Pathname.new(src_path).relative_path_from(Pathname.new(source_dir)).to_s
+    next if excludes.any? { |pattern| rel_path.start_with?(pattern) }
+
+    dest_path = File.join(Dir.pwd, rel_path)
+    if File.directory?(src_path)
+      FileUtils.mkdir_p(dest_path)
+    else
+      FileUtils.cp(src_path, dest_path)
+    end
   end
+
+  say "📦 Overwriting Gemfile from template...", :green
+  copy_file File.join(source_dir, "Gemfile"), "Gemfile", force: true
+  copy_file File.join(source_dir, "Gemfile.lock"), "Gemfile.lock", force: true if File.exist?(File.join(source_dir, "Gemfile.lock"))
 
   say "📦 Re-installing bundle...", :green
   run "bundle install"
