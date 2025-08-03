@@ -5,7 +5,7 @@ A default API template with Ruby on Rails for easy bootstrapping of new projects
 ## Tech Stack
 
 * Database: `PostgreSQL`
-* Rails: `8.0.1`
+* Rails: `8.0.2`
 
 ## Environment Variables
 
@@ -35,6 +35,8 @@ bundle exec rails db:create
 bundle exec rails db:migrate
 bundle exec rspec spec
 ```
+
+Optionally, you may run the convenience script `./bin/default_setup.sh`
 
 ## Current Features
 
