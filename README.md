@@ -1,24 +1,13 @@
-# README
+# Default API Template
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A `Rails` default API template using PostgreSQL as the database backend.
 
-Things you may want to cover:
+## Environment Variables
 
-* Ruby version
+Copy `.dotenv.env` to `.env`
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* `APP_NAME`: The name of your application. Will be used in database naming convention.
+* `DB_USERNAME`: Database username
+* `DB_PASSWORD`: Database password
+* `DB_HOST`: Host location of database
+* `DB_PORT`: Port of PostgreSQL
