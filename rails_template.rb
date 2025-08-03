@@ -23,11 +23,10 @@ after_bundle do
   run "unzip -q -o #{zip_path} -d #{extract_path}"
   source_dir = File.join(extract_path, template_dir_name)
 
-  say "📂 Manually copying files from template...", :green
+  say "📂 Copying files into #{app_name}...", :green
 
-  # Copy files and folders except excluded ones
+  # Manually copy all files, excluding certain directories
   excludes = [".git", "log", "tmp", "node_modules"]
-
   Dir.glob("#{source_dir}/**/*", File::FNM_DOTMATCH).each do |src_path|
     next if src_path == source_dir
     rel_path = Pathname.new(src_path).relative_path_from(Pathname.new(source_dir)).to_s
@@ -41,7 +40,7 @@ after_bundle do
     end
   end
 
-  say "📦 Overwriting Gemfile from template...", :green
+  say "📦 Using template's Gemfile...", :green
   copy_file File.join(source_dir, "Gemfile"), "Gemfile", force: true
   copy_file File.join(source_dir, "Gemfile.lock"), "Gemfile.lock", force: true if File.exist?(File.join(source_dir, "Gemfile.lock"))
 
@@ -50,11 +49,16 @@ after_bundle do
 
   say "🔁 Replacing 'DefaultApiRails' → '#{app_module_name}'", :green
   files = Dir.glob("**/*.{rb,yml,yaml,erb,haml,slim,js,json,md}", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
-
   files.each do |file|
     gsub_file file, "DefaultApiRails", app_module_name
     gsub_file file, "default_api_rails", app_name
   end
 
-  say "✅ App '#{app_name}' is ready and customized!", :green
+  # Reset credentials
+  say "🔐 Resetting credentials to avoid master.key mismatch...", :green
+  remove_file "config/credentials.yml.enc"
+  remove_file "config/master.key"
+  run "EDITOR=true rails credentials:edit"
+
+  say "✅ App '#{app_name}' is ready and secure!", :green
 end
