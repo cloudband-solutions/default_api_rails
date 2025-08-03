@@ -17,7 +17,7 @@ class SystemController < AuthenticationController
     if cmd.valid?
       render json: { token: generate_jwt(cmd.user.to_object) }
     else
-      render json: cmd.payload, status: :unprocessable_entity
+      render json: cmd.payload, status: :unprocessable_content
     end
   end
 end

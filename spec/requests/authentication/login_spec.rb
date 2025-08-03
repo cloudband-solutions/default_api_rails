@@ -4,7 +4,8 @@ RSpec.describe 'Login' do
   include ApiHelpers
 
   let(:user) { FactoryBot.create(:user) }
-  let(:active_user) { FactoryBot.create(:user) }
+  let(:active_user) { FactoryBot.create(:active_user) }
+  let(:inactive_user) { FactoryBot.create(:inactive_user) }
   let(:api_url) { '/login' }
 
   describe "POST /login", type: :request do
@@ -12,7 +13,7 @@ RSpec.describe 'Login' do
       it 'returns error on no parameters passed' do
         post api_url
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         payload = JSON.parse(response.body)
 
@@ -26,7 +27,7 @@ RSpec.describe 'Login' do
 
         post api_url, params: { email: invalid_email, password: invalid_password }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         payload = JSON.parse(response.body)
 
@@ -38,7 +39,7 @@ RSpec.describe 'Login' do
 
         post api_url, params: { email: user.email, password: invalid_password }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         payload = JSON.parse(response.body)
 
@@ -48,7 +49,10 @@ RSpec.describe 'Login' do
       it 'returns error on inactive user' do
         post api_url, params: { email: inactive_user.email, password: 'password' }
 
-        expect(response).to have_http_status(:unauthorized)
+        payload = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(payload["email"][0]).to eq("user inactive")
       end
     end
 
