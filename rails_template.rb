@@ -4,9 +4,11 @@ require "fileutils"
 require "open-uri"
 
 after_bundle do
+  # Setup dynamic app name and module name
   app_name = File.basename(Dir.pwd)
   app_module_name = app_name.split('_').map(&:capitalize).join
 
+  # Template config
   template_repo = "https://github.com/cloudband-solutions/default_api_rails"
   zip_url = "#{template_repo}/archive/refs/heads/master.zip"
   zip_path = "/tmp/#{app_name}_template.zip"
@@ -24,11 +26,22 @@ after_bundle do
   run "unzip -q -o #{zip_path} -d #{extract_path}"
   source_dir = File.join(extract_path, template_dir_name)
 
+  # Copy everything except unwanted folders
   say "📂 Copying files into #{app_name}...", :green
-  directory source_dir, ".", force: true, exclude_pattern: %w[.git log tmp node_modules]
+  directory source_dir, ".", force: true, exclude_pattern: %r{^(\.git|log|tmp|node_modules)}
 
-  say "🔁 Replacing 'DefaultApiRails' → #{app_module_name}", :green
+  # Replace default Gemfile with the one from the template
+  say "📦 Using template's Gemfile...", :green
+  copy_file File.join(source_dir, "Gemfile"), "Gemfile", force: true
+  if File.exist?(File.join(source_dir, "Gemfile.lock"))
+    copy_file File.join(source_dir, "Gemfile.lock"), "Gemfile.lock", force: true
+  end
 
+  say "📦 Re-installing bundle...", :green
+  run "bundle install"
+
+  # Replace DefaultApiRails with the new module name
+  say "🔁 Replacing 'DefaultApiRails' → '#{app_module_name}'", :green
   files = Dir.glob("**/*.{rb,yml,yaml,erb,haml,slim,js,json,md}", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
   files.each do |file|
