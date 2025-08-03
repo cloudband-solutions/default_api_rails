@@ -22,7 +22,7 @@ Copy `.dotenv.env` to `.env`
 1. Create a new project based off of `rails_template.rb`
 
 ```bash
-rails new project_name --api -T -d postgresql -m https://raw.githubusercontent.com/cloudband-solutions/default_api/refs/heads/master/rails_template.rb
+rails new new_project --api -T -d postgresql -m https://raw.githubusercontent.com/cloudband-solutions/default_api_rails/master/rails_template.rb
 ```
 
 2. Copy `.dotenv.env` to `.env` and change variables accordingly.
