@@ -1,6 +1,6 @@
-# Default API Template
+# Default API Template (Ruby on Rails)
 
-A `Rails` default API template for easy bootstrapping.
+A default API template with Ruby on Rails for easy bootstrapping of new projects.
 
 ## Tech Stack
 
