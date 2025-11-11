@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe 'Login' do
   include ApiHelpers
+  include_context "authentication_context"
 
-  let(:user) { FactoryBot.create(:user) }
   let(:active_user) { FactoryBot.create(:active_user) }
   let(:inactive_user) { FactoryBot.create(:inactive_user) }
   let(:api_url) { '/login' }
