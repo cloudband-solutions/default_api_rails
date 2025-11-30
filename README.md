@@ -43,3 +43,11 @@ Optionally, you may run the convenience script `./bin/default_setup.sh`
 * Uses `uuid` as primary key
 * Default `user` entity with `email` as identifier.
 * `rspec` for testing
+
+## Other Commands
+
+**Fix Collation**
+
+```bash
+bundle exec rake db:refresh_collation_concurrent
+```
