@@ -11,6 +11,12 @@ class User < ApplicationRecord
   end
 
   scope :pending, -> { where(status: 'pending') }
+  scope :active, -> { where(status: 'active') }
+  scope :deleted, -> { where(status: 'deleted') }
+
+  scope :search, -> (query) {
+    where('first_name ILIKE :query OR last_name ILIKE :query OR username ILIKE :query', query: "%#{query}%")
+  }
 
   def full_name
     "#{last_name}, #{first_name}"
@@ -18,6 +24,10 @@ class User < ApplicationRecord
 
   def to_s
     full_name
+  end
+
+  def to_h
+    to_object
   end
 
   def to_object
@@ -31,7 +41,19 @@ class User < ApplicationRecord
     }
   end
 
+  def active?
+    self.status == "active"
+  end
+
   def inactive?
     self.status == "inactive"
+  end
+
+  def deleted?
+    self.status == "deleted"
+  end
+
+  def soft_delete!
+    self.update!(status: 'deleted')
   end
 end

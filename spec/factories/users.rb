@@ -6,7 +6,7 @@ FactoryBot.define do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     encrypted_password { generate_password_hash("password") }
-    status { "pending" }
+    status { "active" }
   end
 
   factory :active_user, class: 'User' do

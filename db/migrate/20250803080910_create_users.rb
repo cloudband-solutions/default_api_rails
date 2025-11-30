@@ -5,6 +5,7 @@ class CreateUsers < ActiveRecord::Migration[8.0]
       t.string :encrypted_password, null: false
       t.string :first_name, null: false
       t.string :last_name, null: false
+      t.string :status, null: false, default: 'pending'
 
       t.timestamps
     end
