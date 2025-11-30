@@ -54,7 +54,7 @@ module Users
     private
 
     def validate!
-      if @user.new_record?
+      if @user.blank?
         if @email.blank?
           @payload[:email] << "required"
         elsif (@email =~ URI::MailTo::EMAIL_REGEXP).nil?
