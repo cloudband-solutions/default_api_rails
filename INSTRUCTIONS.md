@@ -6,6 +6,12 @@
 - RSpec for testing
 - PostgreSQL for database (with `uuid` as primary key)
 
+## Implementing a Feature
+
+1. When implementing a feature, make sure to write tests first (see `Writing Tests` section)
+2. Mocks for tests should be created using `FactoryBot`
+3. Make sure to encapsulate business logic in a command pattern
+
 ## Coding Convention
 
 Use command patterns when performing business rules.

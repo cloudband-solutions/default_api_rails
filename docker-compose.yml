@@ -1,0 +1,19 @@
+x-default-rails-api-base: &default-rails-api-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+    args:
+      BUNDLER_VERSION: ${BUNDLER_VERSION:-2.6.2}
+  image: default-rails-api:latest
+  env_file: .env.production
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+services:
+  app:
+    <<: *default-rails-api-base
+    container_name: default-rails-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${HOST_PORT:-8081}:${DOCKER_PORT:-3000}"
+    network_mode: bridge
