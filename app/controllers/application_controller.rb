@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+  include ApiHelpers
+
   def authenticate_user!
     if request.headers["Authorization"].blank?
       render json: { message: "authentication required" }, status: :forbidden
