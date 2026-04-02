@@ -4,7 +4,7 @@ class UsersController < AuthenticatedController
   before_action :authorize_active!
   before_action :authorize_admin!
 
-  before_action :load_resource!, only: [:show, :update, :delete]
+  before_action :load_resource!, only: [:show, :update, :delete, :activate]
 
   def index
     users = User.order("last_name ASC")
@@ -77,6 +77,17 @@ class UsersController < AuthenticatedController
     @user.soft_delete!
 
     render json: { message: "ok" }
+  end
+
+  def activate
+    if !@user.pending?
+      render json: { status: ["cannot activate"] }, status: :unprocessable_content
+      return
+    end
+
+    @user.activate!
+
+    render json: @user.to_h
   end
 
   private

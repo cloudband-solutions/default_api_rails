@@ -34,7 +34,7 @@ module System
       if @user.present? and @password.present?
         if !password_match?(@password, @user.encrypted_password)
           @payload[:password] << "invalid password"
-        elsif @user.inactive?
+        elsif !@user.active?
           @payload[:email] << "user inactive"
         end
       end

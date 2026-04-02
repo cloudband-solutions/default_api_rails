@@ -59,6 +59,10 @@ class User < ApplicationRecord
     self.status == "active"
   end
 
+  def pending?
+    self.status == "pending"
+  end
+
   def inactive?
     self.status == "inactive"
   end
@@ -71,6 +75,12 @@ class User < ApplicationRecord
     self.update!(
       email: "deleted-#{SecureRandom.uuid_v7}-#{self.email}",
       status: 'deleted'
+    )
+  end
+
+  def activate!
+    self.update!(
+      status: 'active'
     )
   end
 end

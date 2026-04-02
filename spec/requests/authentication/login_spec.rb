@@ -6,6 +6,7 @@ RSpec.describe 'Login' do
 
   let(:active_user) { FactoryBot.create(:active_user) }
   let(:inactive_user) { FactoryBot.create(:inactive_user) }
+  let(:pending_user) { FactoryBot.create(:user, status: "pending") }
   let(:api_url) { '/login' }
 
   describe "POST /login", type: :request do
@@ -48,6 +49,15 @@ RSpec.describe 'Login' do
 
       it 'returns error on inactive user' do
         post api_url, params: { email: inactive_user.email, password: 'password' }
+
+        payload = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(payload["email"][0]).to eq("user inactive")
+      end
+
+      it 'returns error on pending user' do
+        post api_url, params: { email: pending_user.email, password: 'password' }
 
         payload = JSON.parse(response.body)
 
