@@ -10,4 +10,10 @@ class AuthenticatedController < ApplicationController
       render json: { message: "unauthorized" }, status: :unauthorized
     end
   end
+
+  def authorize_admin!
+    if not @current_user.admin?
+      render json: { message: "invalid authorization" }, status: :unauthorized
+    end
+  end
 end

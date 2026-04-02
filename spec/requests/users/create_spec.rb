@@ -13,6 +13,15 @@ RSpec.describe 'Users create' do
 
         expect(response).to have_http_status(:forbidden)
       end
+
+      it 'returns unauthorized when user is not admin' do
+        regular_user = FactoryBot.create(:user, role: "user")
+
+        post api_url, headers: build_jwt_header(generate_jwt(regular_user.to_h))
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(JSON.parse(response.body)).to eq({ "message" => "invalid authorization" })
+      end
       
       it 'returns error for missing values' do
         post api_url, headers: user_headers
@@ -67,10 +76,28 @@ RSpec.describe 'Users create' do
         expect(payload['password']).to eq(['does not match'])
         expect(payload['password_confirmation']).to eq(['does not match'])
       end
+
+      it 'returns error for invalid role' do
+        params = {
+          email: Faker::Internet.email,
+          first_name: Faker::Name.first_name,
+          last_name: Faker::Name.last_name,
+          role: "manager",
+          password: "password",
+          password_confirmation: "password"
+        }
+
+        post api_url, params: params, headers: user_headers
+
+        payload = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(payload["role"]).to eq(["invalid role"])
+      end
     end
 
     context 'valid calls' do
-      it 'successfully returns a user' do
+      it 'defaults created users to role user when role is omitted' do
         params = {
           email: Faker::Internet.email,
           first_name: Faker::Name.first_name,
@@ -81,7 +108,28 @@ RSpec.describe 'Users create' do
 
         post api_url, params: params, headers: user_headers
 
+        payload = JSON.parse(response.body)
+
         expect(response).to have_http_status(:ok)
+        expect(payload["role"]).to eq("user")
+      end
+
+      it 'successfully creates a user with the provided role' do
+        params = {
+          email: Faker::Internet.email,
+          first_name: Faker::Name.first_name,
+          last_name: Faker::Name.last_name,
+          role: "admin",
+          password: "password",
+          password_confirmation: "password"
+        }
+
+        post api_url, params: params, headers: user_headers
+
+        payload = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(payload["role"]).to eq("admin")
       end
     end
   end

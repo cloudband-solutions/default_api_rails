@@ -6,7 +6,12 @@ FactoryBot.define do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     encrypted_password { generate_password_hash("password") }
+    role { "user" }
     status { "active" }
+
+    trait :admin do
+      role { "admin" }
+    end
   end
 
   factory :active_user, class: 'User' do
@@ -14,6 +19,7 @@ FactoryBot.define do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     encrypted_password { generate_password_hash("password") }
+    role { "user" }
     status { "active" }
   end
 
@@ -22,6 +28,7 @@ FactoryBot.define do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     encrypted_password { generate_password_hash("password") }
+    role { "user" }
     status { "inactive" }
   end
 end

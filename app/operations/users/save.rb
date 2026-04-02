@@ -9,6 +9,7 @@ module Users
       email:,
       first_name:,
       last_name:,
+      role: nil,
       password:,
       password_confirmation:
     )
@@ -18,6 +19,7 @@ module Users
       @email                  = email
       @first_name             = first_name
       @last_name              = last_name
+      @role                   = role
       @password               = password
       @password_confirmation  = password_confirmation
 
@@ -25,6 +27,7 @@ module Users
         email: [],
         first_name: [],
         last_name: [],
+        role: [],
         password: [],
         password_confirmation: []
       }
@@ -39,12 +42,14 @@ module Users
             email:                  @email,
             first_name:             @first_name,
             last_name:              @last_name,
+            role:                   @role.presence || "user",
             encrypted_password:     generate_password_hash(@password),
           )
         else
           @user.email = @email if @email.present?
           @user.first_name = @first_name if @first_name.present?
           @user.last_name = @last_name if @last_name.present?
+          @user.role = @role if @role.present?
         end
 
         @user.save!
@@ -71,6 +76,8 @@ module Users
           @payload[:last_name] << "required"
         end
 
+        validate_role! if @role.present?
+
         if @password.blank?
           @payload[:password] << "required"
         end
@@ -91,9 +98,17 @@ module Users
             @payload[:email] << "invalid format"
           end
         end
+
+        validate_role! if @role.present?
       end
 
       count_errors!
+    end
+
+    def validate_role!
+      if !User::ROLES.include?(@role)
+        @payload[:role] << "invalid role"
+      end
     end
   end
 end

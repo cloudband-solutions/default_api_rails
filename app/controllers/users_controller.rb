@@ -2,6 +2,7 @@ class UsersController < AuthenticatedController
   include ApiHelpers
   before_action :authenticate_user!
   before_action :authorize_active!
+  before_action :authorize_admin!
 
   before_action :load_resource!, only: [:show, :update, :delete]
 
@@ -39,6 +40,7 @@ class UsersController < AuthenticatedController
       email: params[:email],
       first_name: params[:first_name],
       last_name: params[:last_name],
+      role: params[:role],
       password: params[:password],
       password_confirmation: params[:password_confirmation]
     )
@@ -57,6 +59,7 @@ class UsersController < AuthenticatedController
       email: params[:email],
       first_name: params[:first_name],
       last_name: params[:last_name],
+      role: params[:role],
       password: params[:password],
       password_confirmation: params[:password_confirmation]
     )

@@ -14,6 +14,15 @@ RSpec.describe 'Update user' do
         expect(response).to have_http_status(:forbidden)
       end
 
+      it 'returns unauthorized when user is not admin' do
+        regular_user = FactoryBot.create(:user, role: "user")
+
+        put api_url.gsub(":id", user.id), headers: build_jwt_header(generate_jwt(regular_user.to_h))
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(JSON.parse(response.body)).to eq({ "message" => "invalid authorization" })
+      end
+
       it 'returns not found if user is not found' do
         put api_url.gsub(":id", "non-existent"), headers: user_headers
 
@@ -34,6 +43,19 @@ RSpec.describe 'Update user' do
         expect(response).to have_http_status(:unprocessable_content)
         expect(payload['email'][0]).to eq('already taken')
       end
+
+      it 'returns error for invalid role' do
+        params = {
+          role: "manager"
+        }
+
+        put api_url.gsub(":id", user.id), params: params, headers: user_headers
+
+        payload = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(payload["role"]).to eq(["invalid role"])
+      end
     end
 
     context 'valid calls' do
@@ -41,17 +63,21 @@ RSpec.describe 'Update user' do
         params = {
           email: Faker::Internet.email,
           first_name: Faker::Name.first_name,
-          last_name: Faker::Name.last_name
+          last_name: Faker::Name.last_name,
+          role: "user"
         }
 
         put api_url.gsub(":id", user.id), params: params, headers: user_headers
         
         updated_user = User.find(user.id)
+        payload = JSON.parse(response.body)
 
         expect(response).to have_http_status(:ok)
         expect(updated_user.email).to eq(params[:email])
         expect(updated_user.first_name).to eq(params[:first_name])
         expect(updated_user.last_name).to eq(params[:last_name])
+        expect(updated_user.role).to eq(params[:role])
+        expect(payload["role"]).to eq(params[:role])
       end
     end
   end

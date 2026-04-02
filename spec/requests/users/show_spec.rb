@@ -14,6 +14,15 @@ RSpec.describe 'Users show' do
         expect(response).to have_http_status(:forbidden)
       end
 
+      it 'returns unauthorized when user is not admin' do
+        regular_user = FactoryBot.create(:user, role: "user")
+
+        get api_url.gsub(":id", user.id), headers: build_jwt_header(generate_jwt(regular_user.to_h))
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(JSON.parse(response.body)).to eq({ "message" => "invalid authorization" })
+      end
+
       it 'returns not found if user is not found' do
         get api_url.gsub(":id", "non-existent"), headers: user_headers
 
@@ -25,7 +34,10 @@ RSpec.describe 'Users show' do
       it 'successfully returns a user' do
         get api_url.gsub(":id", user.id), headers: user_headers
 
+        payload = JSON.parse(response.body)
+
         expect(response).to have_http_status(:ok)
+        expect(payload["role"]).to eq(user.role)
       end
     end
   end

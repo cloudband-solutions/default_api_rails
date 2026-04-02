@@ -14,6 +14,15 @@ RSpec.describe 'Users delete' do
         expect(response).to have_http_status(:forbidden)
       end
 
+      it 'returns unauthorized when user is not admin' do
+        regular_user = FactoryBot.create(:user, role: "user")
+
+        delete api_url.gsub(":id", user.id), headers: build_jwt_header(generate_jwt(regular_user.to_h))
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(JSON.parse(response.body)).to eq({ "message" => "invalid authorization" })
+      end
+
       it 'returns not found if user is not found' do
         delete api_url.gsub(":id", "non-existent"), headers: user_headers
 
@@ -23,10 +32,13 @@ RSpec.describe 'Users delete' do
 
     context 'valid calls' do
       it 'successfully soft deletes a user' do
+        original_email = user.email
+
         delete api_url.gsub(":id", user.id), headers: user_headers
 
         expect(response).to have_http_status(:ok)
         expect(User.find(user.id).status).to eq('deleted')
+        expect(User.find(user.id).email).to match(/\Adeleted-.+-#{Regexp.escape(original_email)}\z/)
       end
     end
   end

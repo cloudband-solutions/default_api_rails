@@ -7,3 +7,13 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+password_helper = Object.new.extend(ApiHelpers)
+
+User.find_or_create_by!(email: "admin@example.com") do |user|
+  user.first_name = "Admin"
+  user.last_name = "User"
+  user.role = "admin"
+  user.status = "active"
+  user.encrypted_password = password_helper.generate_password_hash("password")
+end

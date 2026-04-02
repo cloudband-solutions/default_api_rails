@@ -1,12 +1,21 @@
 class User < ApplicationRecord
+  ROLES = [
+    "admin",
+    "user"
+  ]
   validates :email, presence: true, uniqueness: true
   validates :first_name, presence: true
   validates :last_name, presence: true
+  validates :role, presence: true, inclusion: { in: ROLES }
   validates :status, presence: true
 
   before_validation do
     if self.new_record? and self.status.blank?
       self.status = "pending"
+    end
+
+    if self.new_record? and self.role.blank?
+      self.role = "user"
     end
   end
 
@@ -37,8 +46,13 @@ class User < ApplicationRecord
       first_name: first_name,
       last_name: last_name,
       full_name: full_name,
+      role: role,
       status: status
     }
+  end
+
+  def admin?
+    self.role == "admin"
   end
 
   def active?
@@ -54,6 +68,9 @@ class User < ApplicationRecord
   end
 
   def soft_delete!
-    self.update!(status: 'deleted')
+    self.update!(
+      email: "deleted-#{SecureRandom.uuid_v7}-#{self.email}",
+      status: 'deleted'
+    )
   end
 end
