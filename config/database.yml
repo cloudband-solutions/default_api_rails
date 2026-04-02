@@ -26,20 +26,7 @@ test:
   <<: *default
   database: <%= ENV["APP_NAME"] %>_test
 production:
-  primary: &primary_production
-    <<: *default
-    database: <%= ENV["APP_NAME"] %>_production
-    username: <%= ENV["DB_USERNAME"] %>
-    password: <%= ENV["DB_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: <%= ENV["APP_NAME"] %>_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: <%= ENV["APP_NAME"] %>_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: <%= ENV["APP_NAME"] %>_production_cable
-    migrations_paths: db/cable_migrate
+  <<: *default
+  database: <%= ENV["APP_NAME"] %>_production
+  username: <%= ENV["DB_USERNAME"] %>
+  password: <%= ENV["DB_PASSWORD"] %>
