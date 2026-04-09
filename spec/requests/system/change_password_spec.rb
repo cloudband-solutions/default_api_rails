@@ -11,17 +11,17 @@ RSpec.describe 'Change password' do
       it 'returns error if user is not logged in' do
         put api_url
 
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:unauthorized)
         expect(JSON.parse(response.body)).to eq({ "message" => "authentication required" })
       end
 
-      it 'returns unauthorized when user is inactive' do
+      it 'returns forbidden when user is inactive' do
         inactive_user = FactoryBot.create(:inactive_user)
 
         put api_url, headers: build_jwt_header(generate_jwt(inactive_user.to_h))
 
         expect(response).to have_http_status(:forbidden)
-        expect(JSON.parse(response.body)).to eq({ "message" => "invalid authorization" })
+        expect(JSON.parse(response.body)).to eq({ "message" => "forbidden" })
       end
 
       it 'returns validation errors for missing values' do

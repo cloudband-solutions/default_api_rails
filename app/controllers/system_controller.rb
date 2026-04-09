@@ -25,7 +25,7 @@ class SystemController < ApplicationController
 
   def change_password
     if @current_user.inactive?
-      render json: { message: "unauthorized" }, status: :unauthorized
+      render json: { message: "forbidden" }, status: :forbidden
       return
     end
 

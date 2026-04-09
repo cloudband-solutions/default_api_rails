@@ -7,13 +7,13 @@ class AuthenticatedController < ApplicationController
     if not @current_user.present?
       render json: { message: "unauthorized" }, status: :unauthorized
     elsif @current_user.inactive?
-      render json: { message: "unauthorized" }, status: :unauthorized
+      render json: { message: "forbidden" }, status: :forbidden
     end
   end
 
   def authorize_admin!
     if not @current_user.admin?
-      render json: { message: "invalid authorization" }, status: :unauthorized
+      render json: { message: "invalid authorization" }, status: :forbidden
     end
   end
 end

@@ -11,15 +11,15 @@ RSpec.describe 'Users delete' do
       it 'returns error is user is not logged in' do
         delete api_url.gsub(":id", user.id)
 
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:unauthorized)
       end
 
-      it 'returns unauthorized when user is not admin' do
+      it 'returns forbidden when user is not admin' do
         regular_user = FactoryBot.create(:user, role: "user")
 
         delete api_url.gsub(":id", user.id), headers: build_jwt_header(generate_jwt(regular_user.to_h))
 
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:forbidden)
         expect(JSON.parse(response.body)).to eq({ "message" => "invalid authorization" })
       end
 

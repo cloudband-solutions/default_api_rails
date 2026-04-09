@@ -13,15 +13,15 @@ RSpec.describe 'Activate user' do
       it 'returns error if user is not logged in' do
         put api_url.gsub(":id", pending_user.id)
 
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:unauthorized)
       end
 
-      it 'returns unauthorized when user is not admin' do
+      it 'returns forbidden when user is not admin' do
         regular_user = FactoryBot.create(:user, role: "user")
 
         put api_url.gsub(":id", pending_user.id), headers: build_jwt_header(generate_jwt(regular_user.to_h))
 
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:forbidden)
         expect(JSON.parse(response.body)).to eq({ "message" => "invalid authorization" })
       end
 
