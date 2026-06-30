@@ -1,4 +1,4 @@
-# INSTRUCTIONS.md
+# AGENTS.md
 
 ## Purpose
 
@@ -72,9 +72,9 @@ Controllers are API-only and return JSON directly.
 
 Current auth behavior is important:
 
-- Missing `Authorization` header returns `403 forbidden` with `{ message: "authentication required" }`
-- Invalid token or missing active user returns `403 forbidden` with `{ message: "invalid authorization" }`
-- Failed `authorize_active!` or `authorize_admin!` returns `401 unauthorized`
+- Missing `Authorization` header returns `401 unauthorized` with `{ message: "authentication required" }`
+- Invalid token or missing active user returns `401 unauthorized` with `{ message: "invalid authorization" }`
+- Failed `authorize_active!` or `authorize_admin!` returns `403 forbidden`
 
 Keep those response patterns consistent unless you are intentionally changing the template itself.
 
@@ -313,8 +313,8 @@ let(:user_headers) { build_jwt_header(generate_jwt(user.to_h)) }
 
 Match the existing response contract:
 
-- `:forbidden` for missing auth header or invalid auth token
-- `:unauthorized` for authenticated users who fail role or active-state checks
+- `:unauthorized` for missing auth header or invalid auth token
+- `:forbidden` for authenticated users who fail role or active-state checks
 - `:not_found` when a resource cannot be loaded
 - `:unprocessable_content` for validation failures
 - `:ok` for successful requests
