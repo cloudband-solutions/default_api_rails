@@ -27,6 +27,96 @@ This template uses **thin controllers** and **operation objects** for business l
 
 Do not introduce fat controllers or bury feature logic directly in routes, concerns, or model callbacks when an operation object is the clearer fit.
 
+## Engineering Workflow
+
+Work like a careful senior engineer preparing a change for review. The default sequence is:
+
+**understand → inspect conventions → plan → implement → validate → self-review → refine → re-validate → final diff review → stop when stable**
+
+### 1. Understand Before Editing
+
+Before modifying code:
+
+- Read the files surrounding the requested change, including relevant tests and configuration.
+- Look for more specific `AGENTS.md` or `INSTRUCTIONS.md` files, project documentation, and nearby working implementations.
+- Search the repository for similar behavior before designing anything new.
+- Determine which conventions apply and which architectural layer owns the change.
+- Prefer repository conventions over generic Rails or ecosystem conventions whenever this project already establishes a pattern.
+- Reuse an existing pattern rather than introducing a competing one.
+
+When unsure, inspect the closest working implementation, its tests, and relevant documentation before making an assumption. Do not invent a new service, command, response, error-handling, or file-organization style merely because it is common elsewhere.
+
+### 2. Plan the Change
+
+For anything beyond a trivial edit, form a short implementation plan before changing files. It may remain internal unless sharing it would help coordination. Identify:
+
+- files likely to change and existing abstractions to reuse;
+- dependencies and responsibilities across components;
+- expected behavior and important edge or error cases;
+- targeted tests or other validation needed;
+- architectural, security, or portability concerns.
+
+Prefer the smallest change that cleanly satisfies the requirement. Avoid speculative abstractions and unrelated cleanup.
+
+### 3. Implement Deliberately
+
+During implementation:
+
+- Follow nearby code and preserve separation between controllers, operations, models, and other layers.
+- Reuse canonical helpers, operations, components, and utilities instead of duplicating their logic.
+- Keep public interfaces small, predictable, and consistent with existing callers.
+- Avoid unnecessary dependencies and environment-specific shortcuts; prefer modular, portable code and project configuration.
+- Do not refactor unrelated code unless it is necessary to make the requested change clean.
+
+If the request appears to conflict with a project convention, determine whether the convention still applies before proceeding. Any deviation must have a concrete technical reason and be intentional rather than accidental.
+
+### 4. Validate the Change
+
+Run the most relevant available checks. Start with targeted request or model specs, then use broader specs, linters, formatters, type checks, build or framework checks when appropriate. Manually inspect behavior when automated coverage is insufficient.
+
+Do not silently ignore a failure. Determine whether it was caused by the change, was already present, or exposes a flaw that requires another implementation pass. Document unrelated failures in the final handoff.
+
+### 5. Self-Review and Refine
+
+Do not consider the task complete after the first implementation. Inspect the complete diff as if reviewing another developer's pull request. Check:
+
+- **Correctness:** The requested behavior is present, assumptions are valid, and important edge and failure paths are handled.
+- **Conventions:** Naming, file placement, response shapes, and layer boundaries match nearby code; no existing helper or operation pattern was bypassed.
+- **Simplicity:** There is no premature abstraction, unnecessary code, or duplicated canonical logic.
+- **Maintainability:** Responsibilities and dependencies are clear, and a future developer can find the right extension point.
+- **Portability:** There are no unnecessary machine, shell, operating-system, path, host, environment-variable, or developer-setup assumptions.
+- **Security and failures:** Inputs are handled appropriately; secrets and environment-specific values are not hard-coded; failures cannot produce misleading or unsafe behavior.
+
+Use this loop when review or validation reveals a concrete issue:
+
+1. Inspect.
+2. Plan.
+3. Implement.
+4. Validate.
+5. Review the diff.
+6. Identify concrete issues.
+7. Refine the implementation.
+8. Validate again.
+
+Repeat only while a meaningful correctness, architectural, convention, maintainability, portability, security, or testing issue remains. Do not iterate indefinitely over cosmetic preferences.
+
+### 6. Refactoring Scope
+
+If a feature exposes poor structure, refactor only what is needed to implement the requested behavior cleanly. Preserve observable behavior unless changing it is part of the requirement, and keep refactoring logically separable from behavioral changes where practical. Leave beneficial but unnecessary repository-wide redesigns for a separate change.
+
+### 7. Completion and Final Diff Review
+
+Consider a change stable only when:
+
+- the requested behavior is implemented using repository conventions;
+- relevant validation passes, or remaining unrelated failures are understood and documented;
+- no known correctness issue, important unhandled edge case, unnecessary duplication, or avoidable new architecture remains;
+- the appropriate existing abstraction was used;
+- no accidental or unrelated changes remain;
+- another review pass reveals no concrete material improvement worth making.
+
+Before finishing, inspect the full diff one final time for debug statements, temporary files, commented-out or dead code, unused imports, accidental formatting changes, hard-coded paths or URLs, duplicated logic, inconsistent naming, missing tests, and changes outside the requested scope. Remove accidental changes, then stop. The goal is a stable, conventional, maintainable implementation with no known material issues—not theoretical perfection.
+
 ## Existing Template Conventions
 
 ### Routes
