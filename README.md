@@ -5,7 +5,7 @@ A default API template with Ruby on Rails for easy bootstrapping of new projects
 ## Tech Stack
 
 * Database: `PostgreSQL`
-* Rails: `8.0.2`
+* Rails: `8.1.3.1`
 
 ## Environment Variables
 
