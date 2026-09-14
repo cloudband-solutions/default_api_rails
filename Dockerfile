@@ -1,5 +1,5 @@
 # Use ruby version
-FROM ruby:3.4-slim
+FROM ruby:4.0.5-slim
 
 # Install essentials
 # Install system dependencies

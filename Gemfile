@@ -7,6 +7,7 @@ gem "bcrypt"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 gem "kamal", require: false
+gem "json", ">= 2.21.2", "< 3"
 gem "jwt"
 gem "thruster", require: false
 gem "rack-cors"
